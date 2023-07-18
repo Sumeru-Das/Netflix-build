@@ -1,7 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import "./Banner.css";
+import axios from './axios';
+import requests from './Requests';
 
 function Banner() {
+
+    const [movie, setMovie] = useState([]);
+
+    useEffect(() => {
+        async function fetchData() {
+            const request = await axios.get(requests.fetchNetflixOriginals);
+            setMovie(
+                request.data.results[
+                    Math.floor(Math.random() * request.data.results.length - 1)
+                ]
+            );
+            return request;
+        }
+
+        fetchData();
+    }, [])
+
+    console.log(movie);
 
     function truncate(string, n) {
         return string?.length > n ? string.substr(0, n-1) + '...' : string;
@@ -11,20 +31,20 @@ function Banner() {
     <header className='banner'
     style={{
         backgroundSize: "cover",
-        backgroundImage: `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHI1sorKqWggli8LUT0YiSiSfgCtWWgZfPCw&usqp=CAU')`,
+        backgroundImage: `url('https://image.tmdb.org/t/p/original/${movie?.backdrop_path}')`,
         backgroundPosition: "center center",
     }}>
 
         <div className='banner_contents'>
             <h1 className='banner_title'>
-                Movie Name
+                {movie?.title || movie?.name || movie?.original_name}
             </h1>
             <div className='banner_buttons'>
                 <button className='banner_button'>Play</button>
                 <button className='banner_button'>My List</button>
             </div>
             <h1 className='banner_description'>
-                  {truncate(' Netflix is an American subscription video on-demand over-the-top streaming service owned and operated by Netflix, Inc. The service primarily distributes films and television series produced by the media company of the same name from various genres, and it is available internationally in multiple languages. ', 150)}         
+                  {truncate(movie?.overview, 150)}         
             </h1>
 
         </div>

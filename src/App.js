@@ -5,12 +5,13 @@ import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import LoginScreen from './screens/LoginScreen.js';
 import { auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { useDispatch } from 'react-redux';
-import { login, logout } from './features/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { login, logout, selectUser } from './features/userSlice';
+import ProfileScreen from './screens/ProfileScreen';
 
 
 function App() {
-  const user = null;
+  const user = useSelector(selectUser);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -23,12 +24,12 @@ function App() {
           })
         );
         } else {
-            dispatch(logout);
+            dispatch(logout());
         }
     });
 
     return unsubscribe;
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className="app">
@@ -37,7 +38,9 @@ function App() {
               <LoginScreen />
             ) : (
               <Routes>
-                <Route exact path="/Home" element={<HomeScreen/>}>
+                <Route path='/profile' element={<ProfileScreen/>}>
+                </Route>
+                <Route exact path="/" element={<HomeScreen/>}>
                 </Route>
               </Routes>
             )}
